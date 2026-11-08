@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-07  
 **Repository:** `Meentv/Moment-v2`  
-**Branch:** `arena/d1457d0d-moment-v2`  
+**Branch:** `arena/964bba74-moment-v2\
 **Specification:** `MOMENT_V2_Master_Project_Blueprint.pdf` (9 pages, read in full)  
 **Scope decision:** **React only.** The user’s instruction supersedes the blueprint’s two-implementation / Vanilla parity requirement for this repository. No Vanilla project was created.
 
@@ -28,7 +28,7 @@ There was no existing report UI, React app, Vanilla app, source ZIP, asset inven
 | Area | Implementation location | React acceptance evidence |
 | --- | --- | --- |
 | Foundation / design system | `src/styles/`, `src/components/UI.jsx`, `src/layouts/` | Warm rose/coral palette, self-hosted fonts, responsive shell, semantic controls, focus states, reduced-motion CSS; browser screenshots reviewed |
-| Public experience | `src/pages/public/`, `src/layouts/PublicLayout.jsx` | Home, features, about, help/FAQ and honest contact/feedback routes render; no pricing or fake sign-in; contact saves a local note and explicitly does not send |
+| Public experience | `src/pages/public/`, `src/layouts/PublicLayout.jsx`, `src/lib/contact.js` | Home, features, about, help/FAQ and contact routes render; no pricing or fake sign-in; project-owner email `alameenahmed588@gmail.com` is visible and uses `mailto:` drafts; optional feedback notes remain local |
 | Today | `src/pages/Today.jsx` | Live counts, quick capture, today/upcoming/all-open lists, real weekly progress, recent notes, active projects and focus widget; useful empty workspace |
 | Tasks | `src/features/tasks/`, `src/pages/Tasks.jsx`, `src/services/workspace.js` | Create/edit/complete/reopen/delete, undo, validation, filters, sorting, list/board, drag-to-status; unit, React and browser tests pass |
 | Projects | `src/features/projects/`, `src/pages/Projects.jsx`, `src/pages/ProjectDetail.jsx` | Create/edit/archive/restore/delete, colour/status/dates, linked tasks, calculated progress; deleting a project keeps tasks |
@@ -59,15 +59,15 @@ Environment: Node `v22.22.3`, npm `10.9.8`, Vite `6.4.5`, Vitest `3.2.7`, Chromi
 
 | Command / check | Result |
 | --- | --- |
-| `npm run check` | **Pass:** 4 test files, **46 tests passed**; production build completed |
+| `npm run check` | **Pass:** 5 test files, **49 tests passed**; production build completed |
 | `npm run build` | **Pass:** output `dist/`; app JS ~374 kB raw / ~109 kB gzip, React chunk ~52 kB raw / ~18 kB gzip, CSS ~120 kB raw / ~25 kB gzip |
-| `npm run test:browser` | **Pass:** 14 workflow/check groups in real Chromium |
+| `npm run test:browser` | **Pass:** 15 workflow/check groups in real Chromium |
 | Responsive sweep | **Pass:** 13 public/workspace routes at 320, 390, 768, 1024 and 1440 px; no horizontal page overflow detected |
-| Automated axe WCAG A/AA scans | **Pass:** 6 sampled screens (Today light/dark, home mobile/desktop, tasks, settings); **0 violations** |
+| Automated axe WCAG A/AA scans | **Pass:** 8 sampled screens (Today light/dark, contact mobile/desktop, home mobile/desktop, tasks, settings); **0 violations** |
 | Browser console | **Pass:** no console errors or page errors during the final browser run |
 | `git diff --check` | **Pass:** no whitespace errors |
 
-Browser evidence covered task create/complete/reopen/refresh; project creation and linked capture; note autosave/refresh/pin/search/Escape; filters and board; calendar views; focus pause/resume/refresh/exactly-once completion; JSON download, invalid import rejection and confirmed round-trip; theme persistence; mobile navigation; and typed delete-all.
+Browser evidence covered task create/complete/reopen/refresh; project creation and linked capture; note autosave/refresh/pin/search/Escape; filters and board; calendar views; focus pause/resume/refresh/exactly-once completion; JSON download, invalid import rejection and confirmed round-trip; theme persistence; contact email links and prepared drafts; mobile navigation; and typed delete-all.
 
 The browser script writes screenshots and `report.json` to `/tmp/moment-screenshots` by default. This session’s review copies were written outside Git at `/home/user/screenshots`. They are evidence, not seeded product data.
 
@@ -92,6 +92,7 @@ The browser script writes screenshots and `report.json` to `/tmp/moment-screensh
 | B-005 | P2 | Drag a board card to another column | Status changes immediately | Initially opened a prefilled editor instead | **Fixed**; direct validated update with undo |
 | B-006 | P2 | Close a note after a browser-storage failure | Keep the in-tab note and allow closing/export | Editor could block closing while durable save failed | **Fixed**; in-tab commit is retained, warning/exit protection remains |
 | B-007 | P2 | Corrupt stored data and fail to write a recovery copy | Never silently overwrite the original | Risk of treating recovery as permission to reset | **Fixed**; protected original requires explicit reset |
+| B-008 | P2 | Scan the new contact email card | Supporting text meets contrast on the rose panel | Muted text was 4.32:1 on the light rose background | **Fixed**; contact desktop/mobile axe scans clean |
 
 No known open P0 or P1 issues from the checks run. Remaining limitations are listed below rather than hidden.
 
@@ -100,7 +101,7 @@ No known open P0 or P1 issues from the checks run. Remaining limitations are lis
 1. **Local only:** data is tied to this browser profile/device; no accounts or cross-device sync. Browser-local storage is not app-encrypted.
 2. **Storage quota:** very large workspaces may exceed `localStorage`; failures are surfaced and export remains available. IndexedDB can be introduced if volume requires it.
 3. **Multiple tabs:** concurrent tabs use last-write-wins browser storage; a conflict-resolution layer is not implemented.
-4. **Contact:** no support inbox is connected. The form saves a real local feedback note and says it has not been sent.
+4. **Contact:** the project owner’s email is `alameenahmed588@gmail.com`. Links open a draft in the visitor’s email app; MOMENT does not send email automatically or operate a support inbox. Optional feedback notes are saved only in the browser.
 5. **Compatibility:** real-browser checks ran in Chromium only. Safari/Firefox and manual assistive-technology testing remain release QA work.
 6. **Backend:** no SQL, migrations, Supabase client, Auth, RLS or credentials were created. The placeholder environment names are commented and unused.
 7. **Deployment:** Vercel configuration is present, but no external deployment or production-domain verification is claimed.
@@ -112,7 +113,7 @@ No known open P0 or P1 issues from the checks run. Remaining limitations are lis
 - Updated: `README.md`
 - Added root configuration: `.env.example`, `.gitignore`, `index.html`, `package.json`, `package-lock.json`, `vite.config.js`, `vitest.config.js`, `vercel.json`, `CHANGELOG.md`, this review
 - Added application: `src/App.jsx`, `src/main.jsx`, components, contexts, layouts, features, pages, services, storage adapters, styles and utilities
-- Added tests/evidence tooling: `src/test/`, `src/services/*.test.js`, `src/storage/localAdapter.test.js`, `scripts/browser-check.mjs`
+- Added tests/evidence tooling: `src/test/`, `src/services/*.test.js`, `src/storage/localAdapter.test.js`, `src/lib/contact.test.js`, `scripts/browser-check.mjs`
 - Added public asset: `public/favicon.svg`
 
 `node_modules/`, `dist/`, test output and local screenshots are excluded from Git.
@@ -122,7 +123,7 @@ No known open P0 or P1 issues from the checks run. Remaining limitations are lis
 ```bash
 npm install
 npm run dev          # 0.0.0.0:5173
-npm run check        # 46 tests + production build
+npm run check        # 49 tests + production build
 npm run test:browser # requires the dev server and an installed Chromium
 ```
 

@@ -2,6 +2,7 @@ import { chromium as playwright } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { CONTACT_EMAIL, contactMailto } from '../src/lib/contact.js';
 
 const base = process.env.MOMENT_URL || 'http://127.0.0.1:5173';
 const out = process.env.MOMENT_SCREENSHOTS || '/tmp/moment-screenshots';
@@ -137,6 +138,19 @@ try {
   await page.getByRole('button', { name: 'Light & warm', exact: true }).click();
   check('Theme preference persists across routes');
 
+  await goto('/contact');
+  const emailLinks = page.getByRole('link', { name: CONTACT_EMAIL, exact: true });
+  assert.equal(await emailLinks.count() >= 2, true);
+  for (const link of await emailLinks.all()) assert.equal(await link.getAttribute('href'), `mailto:${CONTACT_EMAIL}`);
+  await page.getByLabel('What’s on your mind?').fill('A useful idea');
+  await page.getByLabel(/^Your note/).fill('Keep the workspace simple.');
+  assert.equal(await page.getByRole('link', { name: 'Open email draft' }).getAttribute('href'), contactMailto('A useful idea', 'Keep the workspace simple.'));
+  await page.getByLabel('What’s on your mind?').fill('');
+  await page.getByLabel(/^Your note/).fill('');
+  await page.screenshot({ path: `${out}/contact-desktop.png`, fullPage: true });
+  await axe('contact-desktop');
+  check('Contact email links and prepared email draft');
+
   const routes = ['/', '/features', '/about', '/help', '/contact', '/app', '/app/tasks', '/app/projects', '/app/notes', '/app/calendar', '/app/focus', '/app/settings', '/app/search?q=plan'];
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
@@ -158,6 +172,9 @@ try {
   await goto('/');
   await page.screenshot({ path: `${out}/home-mobile.png`, fullPage: true });
   await axe('home-mobile');
+  await goto('/contact');
+  await page.screenshot({ path: `${out}/contact-mobile.png`, fullPage: true });
+  await axe('contact-mobile');
   check('Mobile navigation drawer and screenshots');
 
   await page.setViewportSize({ width: 1440, height: 1000 });
