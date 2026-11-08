@@ -14,7 +14,7 @@ A real, local-first productivity workspace built from `MOMENT_V2_Master_Project_
 - **Focus:** timestamp-based focus/break timer with start, pause, resume, reset, optional task link, configurable durations, optional automatic break, refresh recovery, and completed-session history.
 - **Search:** one entry across tasks, projects and notes; keyboard shortcut, arrow-key results, full search page.
 - **Settings:** light/dark/system theme, greeting name, week start, timer preferences, JSON export/import, storage recovery, and typed confirmation before deleting all data.
-- **Public pages:** product introduction, features, how it works, about, help/FAQ, and an honest contact/feedback path. No pricing or sign-in screens are shown because paid plans and authentication are not implemented.
+- **Public pages:** product introduction, features, how it works, about, help/FAQ, and contact. The project owner’s email is **alameenahmed588@gmail.com**; email links open a draft in the visitor’s email app. A feedback note can also be saved locally. No pricing or sign-in screens are shown because paid plans and authentication are not implemented.
 
 ## Stack
 
@@ -100,7 +100,7 @@ This repository has been prepared for deployment, but no external Vercel deploym
 ## Current limitations
 
 - React only, by request. The blueprint's Vanilla parity requirement is superseded for this repository.
-- No accounts, cloud sync, notifications, paid plans, or support inbox. The contact form saves a feedback note locally and explicitly says it has not sent a message.
+- No accounts, cloud sync, notifications, or paid plans. Contact is by email at **alameenahmed588@gmail.com** through the visitor’s own email app; MOMENT does not send email automatically. The optional feedback note is saved only in the browser.
 - Browser-local storage is limited by browser quota; very large workspaces may need the future IndexedDB/Supabase adapter.
 - Automated accessibility checks are not a substitute for a full manual screen-reader audit. Safari and Firefox were not available in the implementation sandbox.
 - Supabase Auth, SQL migrations, RLS and multi-account isolation remain deferred to M7. No backend credentials or SQL were created.

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added the project owner’s contact email, `alameenahmed588@gmail.com`, to the contact page, public footer, help page, and workspace settings.
+- Contact forms can prepare a `mailto:` draft or save a local feedback note; the app still does not send email automatically.
+
 ## 2.0.0 — React-only blueprint implementation
 
 - Applied the MOMENT V2 blueprint with an explicit React-only scope decision.

@@ -3,6 +3,7 @@ import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestApp } from '../App.jsx';
 import { STORAGE_KEY } from '../services/model.js';
+import { CONTACT_EMAIL, contactMailto } from '../lib/contact.js';
 
 const stored = () => JSON.parse(localStorage.getItem(STORAGE_KEY));
 const setup = (path = '/app/tasks') => { const user = userEvent.setup(); render(<TestApp initialEntries={[path]} />); return user; };
@@ -132,14 +133,23 @@ describe('React workspace acceptance flows', () => {
     expect(stored().tasks).toEqual([]);
     expect(stored().preferences.theme).toBe('light');
   });
-  it('renders every public route and an honest contact path', async () => {
+  it('renders an honest contact path with the project owner’s email', async () => {
     const user = setup('/contact');
-    expect(screen.getByText(/A support inbox isn’t connected/)).toBeInTheDocument();
+    expect(screen.getByText(/This form does not send email by itself/)).toBeInTheDocument();
+    const emailLinks = screen.getAllByRole('link', { name: CONTACT_EMAIL });
+    expect(emailLinks.length).toBeGreaterThanOrEqual(2);
+    emailLinks.forEach((link) => expect(link).toHaveAttribute('href', `mailto:${CONTACT_EMAIL}`));
     await user.type(screen.getByLabelText(/What’s on your mind\?/), 'A useful idea');
     await user.type(screen.getByLabelText(/Your note/), 'Keep the workspace simple.');
+    expect(screen.getByRole('link', { name: 'Open email draft' })).toHaveAttribute('href', contactMailto('A useful idea', 'Keep the workspace simple.'));
     await user.click(screen.getByRole('button', { name: 'Save as a note' }));
     expect(stored().notes[0].tags).toContain('feedback');
     expect(stored().notes[0].title).toBe('Feedback: A useful idea');
+    expect(stored().notes[0].body).toContain('has not been sent by email');
+  });
+  it('offers the contact email from workspace settings', () => {
+    setup('/app/settings');
+    expect(screen.getByRole('link', { name: CONTACT_EMAIL })).toHaveAttribute('href', `mailto:${CONTACT_EMAIL}`);
   });
   it('shows a recovery path for a missing project and a 404 page', () => {
     setup('/app/projects/missing');
